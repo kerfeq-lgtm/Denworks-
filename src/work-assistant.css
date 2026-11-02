@@ -18,3 +18,20 @@
 @media(min-width:620px){.wa-main{padding:36px 28px}.wa-metric-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.wa-pay-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.wa-pay-summary>div{display:block}.wa-pay-summary strong{display:block;margin-top:9px}.wa-tabbar{left:50%;right:auto;transform:translateX(-50%);width:min(100%,520px);border:1px solid #ffffff16;border-bottom:0;border-radius:18px 18px 0 0}}
 @media(max-width:390px){.wa-main{padding-left:13px;padding-right:13px}.wa-header{padding-left:14px;padding-right:14px}.wa-page-heading{align-items:flex-start;flex-direction:column}.wa-page-heading .wa-button{align-self:flex-start}.wa-metric{padding:12px}.wa-metric>strong{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.wa-shell *{transition:none!important;scroll-behavior:auto!important}}
+
+.wa-day-selector{display:flex;gap:7px;overflow-x:auto;padding:4px 0 12px;position:sticky;top:0;z-index:2;background:var(--wa-bg,#111)}
+.wa-day-selector .wa-button{flex:1;min-width:43px;padding:10px 8px;justify-content:center}
+.wa-routine-list{display:flex;flex-direction:column;gap:9px}
+.wa-routine-item{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid #ffffff14;border-radius:13px;background:#ffffff05;cursor:pointer}
+.wa-routine-item input,.wa-label-row input{accent-color:#b7c99a;width:18px;height:18px;flex:0 0 auto;margin:2px 0 0}
+.wa-routine-copy{display:flex;flex-direction:column;gap:6px;min-width:0}
+.wa-routine-copy strong{font-size:14px;line-height:1.45;font-weight:550}
+.wa-routine-copy small{font-size:12px;line-height:1.45;color:#e7bd7a}
+.wa-routine-item.is-checked{opacity:.65}
+.wa-routine-item.is-checked .wa-routine-copy strong{text-decoration:line-through}
+.wa-label-list{display:flex;flex-direction:column;gap:8px}
+.wa-label-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:12px;border:1px solid #ffffff14;border-radius:11px}
+.wa-label-row>strong{font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+.wa-label-row label{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--wa-muted,#aaa);white-space:nowrap}
+.wa-label-row input{width:15px;height:15px}
+@media(max-width:520px){.wa-label-row{grid-template-columns:1fr 1fr}.wa-label-row>strong{grid-column:1/-1}.wa-label-row label{font-size:12px}}
