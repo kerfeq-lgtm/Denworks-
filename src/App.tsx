@@ -41,6 +41,15 @@ const LABELS = [
 const LABELS_PRESENT = new Set(LABELS.filter(x => x !== 'Sweet pea' && x !== 'Kale'));
 const money = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(Number.isFinite(value) ? value : 0);
 const today = () => { const d = new Date(); const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return local.toISOString().slice(0, 10); };
+const weekdayName = () => new Date().toLocaleDateString('en-US', { weekday: 'long' });
+const nextDateForWeekday = (day: string) => {
+  const names = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const target = names.indexOf(day);
+  const date = new Date();
+  date.setHours(12, 0, 0, 0);
+  if (target >= 0) date.setDate(date.getDate() + ((target - date.getDay() + 7) % 7));
+  return [date.getFullYear(), String(date.getMonth()+1).padStart(2,'0'), String(date.getDate()).padStart(2,'0')].join('-');
+};
 const makeId = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
 
 const BASE_ROUTINES: RoutineDay[] = [
@@ -184,6 +193,9 @@ export default function App() {
   const [state,setState] = useState<StoredState>(readState);
   const [tab,setTab] = useState<'home'|'tasks'|'routine'|'pay'|'assistant'>('home');
   const [showTaskForm,setShowTaskForm] = useState(false);
+  const [presetDay,setPresetDay] = useState(weekdayName());
+  const [selectedPresetIds,setSelectedPresetIds] = useState<string[]>([]);
+  const [presetNotice,setPresetNotice] = useState('');
   const [showPayForm,setShowPayForm] = useState(false);
   const [editingTaskId,setEditingTaskId] = useState<string|null>(null);
   const [taskTitle,setTaskTitle] = useState('');
@@ -238,7 +250,27 @@ export default function App() {
 
   const openTaskForm = (task?:WorkTask) => {
     setEditingTaskId(task?.id||null);setTaskTitle(task?.title||'');setTaskSource(task?.source||'manual');
-    setTaskDue(task?.dueDate||'');setTaskPriority(task?.priority||'medium');setTaskPayout(String(task?.payout??PAY_PER_TASK));setShowTaskForm(true);
+    setTaskDue(task?.dueDate||'');setTaskPriority(task?.priority||'medium');setTaskPayout(String(task?.payout??PAY_PER_TASK));
+    if(!task){setPresetDay(weekdayName());setSelectedPresetIds([]);setPresetNotice('');}
+    setShowTaskForm(true);
+  };
+  const activePresetDay = state.routines.find(day=>day.day===presetDay);
+  const presetDueDate = nextDateForWeekday(presetDay);
+  const isPresetAlreadyLogged = (label:string) => state.tasks.some(task =>
+    task.title.trim().toLowerCase()===label.trim().toLowerCase() &&
+    task.dueDate===presetDueDate && !task.archived
+  );
+  const addSelectedPresets = () => {
+    const chosen = (activePresetDay?.items || []).filter(item=>selectedPresetIds.includes(item.id) && !isPresetAlreadyLogged(item.label));
+    if(!chosen.length){setPresetNotice('Select one or more presets that are not already on your task board.');return;}
+    const createdAt = new Date().toISOString();
+    const tasks:WorkTask[] = chosen.map(item=>({
+      id:makeId(),title:item.label,source:'manual',status:'queued',payout:PAY_PER_TASK,
+      priority:'medium',createdAt,dueDate:presetDueDate
+    }));
+    setState(s=>({...s,tasks:[...tasks,...s.tasks]}));
+    setSelectedPresetIds([]);setPresetNotice('');
+    setShowTaskForm(false);setTab('tasks');
   };
   const saveTask = (event:React.FormEvent) => {
     event.preventDefault();const title=taskTitle.trim();const payout=Number(taskPayout);
@@ -357,7 +389,28 @@ export default function App() {
         <NavItem active={tab==='assistant'} icon={<Bot size={19}/>} label="AI helper" onClick={()=>setTab('assistant')}/>
       </nav>
 
-      {showTaskForm&&<Modal title={editingTaskId?'Edit task':'Add a work task'} onClose={()=>setShowTaskForm(false)}><form className="wa-form" onSubmit={saveTask}>
+      {showTaskForm&&<Modal title={editingTaskId?'Edit task':'Add a work task'} onClose={()=>setShowTaskForm(false)}>
+      {!editingTaskId&&<section className="wa-preset-section">
+        <div className="wa-preset-heading"><div><span className="wa-eyebrow">QUICK ADD FROM ROUTINE</span><h3>Tasks for this day</h3></div><CalendarDays size={20}/></div>
+        <p className="wa-footnote">Choose a weekday to see its saved routine items. Select the ones you want to log as separate tasks; the original routine checklist stays unchanged.</p>
+        <label className="wa-preset-day">Day
+          <select value={presetDay} onChange={e=>{setPresetDay(e.target.value);setSelectedPresetIds([]);setPresetNotice('');}}>
+            {state.routines.map(day=><option key={day.day} value={day.day}>{day.day}</option>)}
+          </select>
+        </label>
+        <div className="wa-preset-list">{(activePresetDay?.items||[]).map(item=>{
+          const already=isPresetAlreadyLogged(item.label);
+          return <label className={'wa-preset-row '+(already?'is-logged':'')} key={item.id}>
+            <input type="checkbox" disabled={already} checked={selectedPresetIds.includes(item.id)} onChange={e=>setSelectedPresetIds(ids=>e.target.checked?[...ids,item.id]:ids.filter(id=>id!==item.id))}/>
+            <span><strong>{item.label}</strong>{item.warning&&<small>⚠️ {item.warning}</small>}{already&&<small className="wa-preset-logged">Already logged for {presetDueDate}</small>}</span>
+            <small className="wa-preset-rate">{money(PAY_PER_TASK)}</small>
+          </label>;
+        })}</div>
+        <div className="wa-preset-footer"><span>{selectedPresetIds.filter(id=>(activePresetDay?.items||[]).some(item=>item.id===id&&!isPresetAlreadyLogged(item.label))).length} selected · {presetDueDate}</span><button className="wa-button" type="button" disabled={!selectedPresetIds.length} onClick={addSelectedPresets}><Plus size={15}/> Add selected tasks</button></div>
+        {presetNotice&&<p className="wa-form-hint" role="status">{presetNotice}</p>}
+      </section>}
+      {!editingTaskId&&<div className="wa-custom-divider"><span>OR ADD A SEPARATE TASK</span></div>}
+      <form className="wa-form" onSubmit={saveTask}>
         <label>Task title<input autoFocus value={taskTitle} onChange={e=>setTaskTitle(e.target.value)} required maxLength={180}/></label>
         <label>Source<select value={taskSource} onChange={e=>setTaskSource(e.target.value as WorkSource)}><option value="manual">Quick note</option><option value="file">File</option><option value="website">Website</option><option value="message">Message</option></select></label>
         <div className="wa-form-row"><label>Due date<input type="date" value={taskDue} onChange={e=>setTaskDue(e.target.value)}/></label><label>Priority<select value={taskPriority} onChange={e=>setTaskPriority(e.target.value as Priority)}><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label></div>
