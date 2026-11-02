@@ -55,3 +55,101 @@
   .wa-label-row label{font-size:12px;white-space:normal;align-items:center}
   .wa-label-row input{width:24px;height:24px;min-width:24px}
 }
+
+
+/* Milestone 2: local-only tools and responsive controls */
+.wa-tabbar{grid-template-columns:repeat(5,minmax(0,1fr))}
+.wa-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:15px 0}
+.wa-toolbar select,.wa-tool-card select,.wa-form select{min-height:44px;border:1px solid var(--wa-border);background:#171714;color:var(--wa-text);border-radius:11px;padding:10px 12px;font:500 13px 'DM Sans',sans-serif}
+.wa-search{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;min-height:44px;padding:0 12px;border:1px solid var(--wa-border);background:#171714;border-radius:11px;color:var(--wa-muted)}
+.wa-search input{width:100%;min-width:0;border:0!important;outline:0;background:transparent!important;color:var(--wa-text);font-size:14px;min-height:40px}
+.wa-batch-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.wa-batch-actions .wa-button,.wa-toolbar .wa-button{font-size:11px}
+.wa-button:disabled{opacity:.45;cursor:not-allowed}
+.wa-button.active-filter{border-color:var(--wa-amber);color:var(--wa-amber)}
+.wa-priority{font-size:9px;padding:3px 7px;border-radius:20px;text-transform:capitalize;background:#ffffff0a;color:var(--wa-muted)}
+.wa-priority.priority-high{color:#efaa9b;background:#efaa9b18}
+.wa-priority.priority-medium{color:#e5c58a;background:#e5c58a18}
+.wa-priority.priority-low{color:#9ebd9c;background:#9ebd9c18}
+.wa-due-date{font-size:10px;color:var(--wa-blue)}
+.wa-covered-check{display:flex;align-items:center;gap:4px;color:var(--wa-green);font-size:10px;white-space:nowrap}
+.wa-covered-check input,.wa-task-link-picker input,.wa-draft-row input{width:18px;height:18px;accent-color:#9ebd9c}
+.wa-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wa-task-link-picker{display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid var(--wa-border);border-radius:12px;background:#ffffff05}
+.wa-task-link-picker>strong{font-size:12px}
+.wa-task-link-picker label{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:11px;font-weight:400;color:var(--wa-muted)}
+.wa-task-link-picker small{font-size:11px;color:var(--wa-muted)}
+.wa-goal-card,.wa-tool-card,.wa-backup-card{padding:17px;border:1px solid var(--wa-border);background:var(--wa-panel);border-radius:17px;margin-top:20px}
+.wa-goal-card>.wa-section-heading{color:var(--wa-amber)}
+.wa-goal-numbers{display:flex;align-items:baseline;gap:8px;margin:12px 0}
+.wa-goal-numbers strong:first-child{font:800 23px Manrope}
+.wa-goal-numbers span{font-size:11px;color:var(--wa-muted);flex:1}
+.wa-goal-numbers strong:last-child{font:700 16px Manrope;color:var(--wa-green)}
+.wa-goal-form{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:13px}
+.wa-goal-form input,.wa-tool-card textarea,.wa-extract-grid input,.wa-add-routine input,.wa-inline-edit{width:100%;min-width:0;border:1px solid #424137;background:#11110f;color:var(--wa-text);border-radius:11px;padding:12px;font:400 14px 'DM Sans',sans-serif;outline:none}
+.wa-tool-card textarea{display:block;resize:vertical;line-height:1.55;margin:11px 0}
+.wa-tool-card textarea:focus,.wa-goal-form input:focus,.wa-add-routine input:focus,.wa-inline-edit:focus{border-color:var(--wa-amber);box-shadow:0 0 0 3px #d9a86c20}
+.wa-draft-list{display:flex;flex-direction:column;gap:8px;margin-top:15px;padding-top:13px;border-top:1px solid var(--wa-border)}
+.wa-draft-row{display:flex;align-items:flex-start;gap:10px;padding:11px;border:1px solid var(--wa-border);border-radius:11px;background:#ffffff04}
+.wa-draft-row>span{display:flex;flex-direction:column;gap:5px;min-width:0}
+.wa-draft-row strong{font-size:12px;line-height:1.4}
+.wa-draft-row small{font-size:10px;color:var(--wa-muted);text-transform:capitalize}
+.wa-crop-quick{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0}
+.wa-crop-quick .wa-button{font-size:10px;white-space:normal}
+.wa-answer{padding:14px;border:1px solid #9ebd9c35;background:#9ebd9c0b;border-radius:13px;margin:13px 0}
+.wa-answer>strong{font:700 14px Manrope;color:var(--wa-green)}
+.wa-answer p{font-size:12px;line-height:1.7;color:#dedbd1;margin:8px 0 0}
+.wa-extract-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.wa-extract-grid label{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--wa-muted)}
+.wa-extract-grid input{font-size:14px}
+.wa-summary-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.wa-summary-table{padding:14px;border:1px solid var(--wa-border);background:var(--wa-panel);border-radius:14px}
+.wa-summary-table h3{font:700 14px Manrope;margin:0 0 10px}
+.wa-summary-row{display:grid;grid-template-columns:1fr 1fr;gap:4px 9px;padding:10px 0;border-top:1px solid #ffffff0d;font-size:10px;color:var(--wa-muted)}
+.wa-summary-row strong{grid-column:1/-1;color:var(--wa-text);font-size:12px}
+.wa-add-routine{display:flex;gap:8px;margin-top:12px}
+.wa-add-routine input{flex:1}
+.wa-routine-item{align-items:flex-start}
+.wa-routine-copy{flex:1}
+.wa-routine-actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:5px}
+.wa-routine-actions button{display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:5px 7px;border:1px solid var(--wa-border);border-radius:8px;background:#ffffff05;color:var(--wa-muted);font-size:10px;cursor:pointer}
+.wa-routine-actions button:disabled{opacity:.3;cursor:not-allowed}
+.wa-routine-actions button:hover{color:var(--wa-amber);border-color:#d9a86c55}
+.wa-inline-edit{max-width:100%;font-size:13px;padding:8px}
+.wa-label-row{grid-template-columns:minmax(0,1fr) auto auto}
+.wa-label-row label{display:flex;align-items:center;gap:7px;white-space:normal}
+.wa-file-button{position:relative;overflow:hidden;cursor:pointer}
+.wa-file-button input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.wa-drawer-backdrop{position:fixed;inset:0;z-index:45;background:#000a;display:flex;justify-content:flex-end;backdrop-filter:blur(5px)}
+.wa-reference-drawer{width:min(100%,430px);height:100%;overflow:auto;background:#1b1b17;border-left:1px solid var(--wa-border);padding:22px;box-shadow:-20px 0 70px #0008}
+.wa-reference-drawer .wa-modal-heading{align-items:flex-start}
+.wa-reference-drawer h2{font:700 20px Manrope;margin:6px 0}
+.wa-reference-image{display:block;width:100%;max-height:55vh;object-fit:contain;background:#10100e;border:1px solid var(--wa-border);border-radius:13px;margin:14px 0}
+.wa-reference-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;min-height:180px;background:#ffffff05;border:1px dashed var(--wa-border);border-radius:13px;color:var(--wa-muted);margin:14px 0}
+.wa-reference-empty strong{font-size:12px}
+.wa-print-sheet{display:none}
+.wa-print-task{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid #ddd;font-size:12px;line-height:1.4}
+.wa-print-box{width:13px;height:13px;border:1px solid #555;flex:0 0 13px;margin-top:1px}
+@media(min-width:620px){.wa-summary-grid{grid-template-columns:1fr 1fr}.wa-summary-row{grid-template-columns:1fr 1fr}.wa-summary-row strong{grid-column:1/-1}}
+@media(max-width:520px){
+  .wa-tabbar{grid-template-columns:repeat(5,minmax(0,1fr));padding-left:5px;padding-right:5px}
+  .wa-nav-item{font-size:9px;min-width:0}
+  .wa-goal-form{grid-template-columns:1fr}
+  .wa-label-row{grid-template-columns:1fr 1fr}
+  .wa-label-row>strong{grid-column:1/-1}
+  .wa-routine-actions button{min-height:34px}
+  .wa-form-row{grid-template-columns:1fr 1fr}
+}
+@media print{
+  @page{size:auto;margin:16mm}
+  html,body,#root,.wa-shell{background:#fff!important;color:#111!important;min-height:0!important;padding:0!important;margin:0!important}
+  .wa-shell *{visibility:hidden!important}
+  .wa-print-sheet,.wa-print-sheet *{visibility:visible!important}
+  .wa-print-sheet{display:block!important;position:absolute;inset:0 auto auto 0;width:100%;padding:0;background:#fff!important;color:#111!important;font:11pt Arial,sans-serif}
+  .wa-print-sheet h1{font:700 20pt Arial,sans-serif;margin:0 0 5px}
+  .wa-print-sheet>p{font:9pt Arial,sans-serif;color:#444;margin:0 0 16px}
+  .wa-print-sheet section{break-inside:avoid;margin:0 0 18px}
+  .wa-print-sheet h2{font:700 14pt Arial,sans-serif;border-bottom:2px solid #222;padding-bottom:5px;margin:15px 0 7px}
+  .wa-print-task{font:10pt Arial,sans-serif;border-color:#bbb;padding:6px 0}
+  .wa-print-note{font:9pt Arial,sans-serif;border-top:1px solid #777;padding-top:10px}
+}
