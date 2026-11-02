@@ -170,8 +170,8 @@ function parseWorkText(sourceText:string) {
 }
 function extractPayText(raw:string) {
   const currency = raw.match(/\$\s?([\d,]+(?:\.\d{1,2})?)/);
-  const labeled = raw.match(/(?:gross|total|amount paid|net pay|paid|earnings)\s*[:=]?\s*([\d,]+(?:\.\d{1,2})?)/i);
-  const grossText = currency?.[1] || labeled?.[1] || '';
+  const labeled = raw.match(/(?:gross(?:\s+pay)?|total|amount paid|net pay|paid|earnings)\s*[:=]?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+  const grossText = labeled?.[1] || currency?.[1] || '';
   const gross = Number(grossText.replace(/,/g,''));
   const dateISO = raw.match(/\b(20\d{2})-(\d{1,2})-(\d{1,2})\b/);
   const dateUS = raw.match(/\b(\d{1,2})[/-](\d{1,2})[/-](20\d{2})\b/);
