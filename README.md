@@ -8,7 +8,7 @@ A dark, cozy, mobile-first work companion for routines, crop labels, tasks, payc
 - Product label search, missing/full-sheet filters, and custom varieties
 - Printer-friendly Wednesday harvest, Thursday delivery, and Friday harvest run-sheet
 - Local reference-image drawer for routine notes and unclear source-photo items
-- Paycheck log, $25 personal allowance, savings goals, monthly/yearly summaries, and task/paycheck reconciliation
+- Paycheck log, $25 personal allowance, multiple individually funded savings goals, monthly/yearly summaries, and task/paycheck reconciliation
 - Local note/message task drafting, crop reference guidance for all 20 varieties, and paycheck/receipt text extraction
 - JSON backup and restore for the app's local data
 - Browser local storage; no account or server connection is required for these local features
