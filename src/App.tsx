@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Activity, ArrowDownLeft, Bot, Check, CheckCircle2, ChevronRight,
+  Activity, ArrowDownLeft, Bot, Check, CheckCircle2, ChevronRight, CalendarDays,
   CircleDollarSign, Clock3, FileText, FolderOpen, ListTodo, Plus, ShieldCheck,
   Sparkles, Wallet, X
 } from 'lucide-react';
@@ -39,7 +39,7 @@ function readState(): StoredState {
 
 export default function App() {
   const [state, setState] = useState<StoredState>(readState);
-  const [tab, setTab] = useState<'home' | 'tasks' | 'pay' | 'assistant'>('home');
+  const [tab, setTab] = useState<'home' | 'tasks' | 'routine' | 'pay' | 'assistant'>('home');
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showPayForm, setShowPayForm] = useState(false);
   const [taskTitle, setTaskTitle] = useState('');
@@ -131,6 +131,8 @@ export default function App() {
           {state.tasks.length ? <div className="wa-task-list">{state.tasks.map(task => <TaskRow key={task.id} task={task} onAdvance={() => updateTask(task.id, task.status === 'queued' ? 'in_progress' : task.status === 'in_progress' ? 'done' : 'queued')} onDelete={() => deleteTask(task.id)} />)}</div> : <EmptyState title="No tasks yet" detail="Add your first task to start your work queue." />}
         </>}
 
+        {tab === 'routine' && <RoutinePanel />}
+
         {tab === 'pay' && <>
           <PageHeading eyebrow="MONEY LOG" title="Pay & savings" detail="Record real paychecks and keep your $25 personal allowance visible." action={<button className="wa-button" onClick={() => setShowPayForm(true)}><Plus size={16} /> Add paycheck</button>} />
           <section className="wa-pay-summary"><div><span>TOTAL PAY RECORDED</span><strong>{money(totalPay)}</strong></div><div><span>ALLOWANCES SET ASIDE</span><strong>{money(totalAllowances)}</strong></div><div><span>ESTIMATED SAVINGS</span><strong>{money(savings)}</strong></div></section>
@@ -149,6 +151,7 @@ export default function App() {
       <nav className="wa-tabbar" aria-label="Main navigation">
         <NavItem active={tab === 'home'} icon={<Activity size={19}/>} label="Home" onClick={() => setTab('home')} />
         <NavItem active={tab === 'tasks'} icon={<ListTodo size={19}/>} label="Tasks" onClick={() => setTab('tasks')} />
+        <NavItem active={tab === 'routine'} icon={<CalendarDays size={19}/>} label="Routine" onClick={() => setTab('routine')} />
         <NavItem active={tab === 'pay'} icon={<Wallet size={19}/>} label="Pay" onClick={() => setTab('pay')} />
         <NavItem active={tab === 'assistant'} icon={<Bot size={19}/>} label="AI helper" onClick={() => setTab('assistant')} />
       </nav>
@@ -174,4 +177,82 @@ function EmptyState({ title, detail }: { title: string; detail: string }) {
 }
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return <div className="wa-modal-backdrop" role="presentation" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}><section className="wa-modal" role="dialog" aria-modal="true" aria-label={title}><div className="wa-modal-heading"><h2>{title}</h2><button className="wa-icon-button" aria-label="Close dialog" onClick={onClose}><X size={18}/></button></div>{children}</section></div>;
+}
+
+const ROUTINES = [
+  {day:'Monday',title:'Inventory & station prep',tasks:[
+    ['seeds','Check seed shelf fill lines; put a red reorder card in the basket if low.'],
+    ['soil','Check bulk soil/coir bins.'],
+    ['paper','Check paper towels and packaging supplies.','Source wording is unclear; verify the exact instruction.'],
+    ['clamshells','Check clamshell packaging containers.'],
+    ['variety','Check that variety sticker rolls are full.'],
+    ['traps','Inspect sticky traps and replace dirty ones.'],
+    ['soak','Set up soaking jars and scoops for Tuesday’s planting batch.'],
+    ['weight','Move trays to the Weighted Phase and place visual weight blocks on top.']
+  ]},
+  {day:'Tuesday',title:'Planting day #1',tasks:[
+    ['batch1','Execute Batch #1 planting with color-matched scoops and pre-measured soil trays.'],
+    ['weight','Move trays to the Weighted Phase and place visual weight blocks on top.'],
+    ['water','Top-/bottom-water active growing racks.']
+  ]},
+  {day:'Wednesday',title:'Harvest #1 + planting #2',tasks:[
+    ['batchcheck','Confirm the morning short-grow batch number before planting.','Transcription conflict: photo appears to say Batch #1, while the heading says Planting Day #2.'],
+    ['harvest','Harvest subscriber/restaurant orders: cut greens, weigh with clamshell on scale, apply delivery labels.'],
+    ['batch2','Execute afternoon Batch #2 planting for next week’s Friday harvest.'],
+    ['weight','Move trays to the Weighted Phase and place visual weight blocks on top.'],
+    ['stage','Stage finished packs in designated refrigerated delivery totes.'],
+    ['water','Top-/bottom-water active growing racks.']
+  ]},
+  {day:'Thursday',title:'Delivery + planting #3',tasks:[
+    ['load','Load pre-staged delivery totes into transport bins using visual routing checklists.'],
+    ['drop','Complete subscriber and restaurant drop-offs.'],
+    ['batch3','Execute Batch #3 planting for next week’s Friday/Market harvest.'],
+    ['lights','Bottom-water and check lights on greening racks.'],
+    ['water','Water crop.']
+  ]},
+  {day:'Friday',title:'Harvest #2 + market prep',tasks:[
+    ['harvest','Harvest bulk trays for weekend sales.'],
+    ['pack','Pack market clamshells and apply price stickers.'],
+    ['totes','Pack market totes: tents, tables, lanyards, displays, extra clamshells, blank labels, cash/token box.'],
+    ['inventory','Count all products on the inventory sheet.'],
+    ['cuttrays','Decide on cut trays for display/extra inventory.'],
+    ['water','Top-/bottom-water active growing racks.']
+  ]},
+  {day:'Saturday',title:'Farmers market day #1',tasks:[
+    ['coolers','Pack coolers with ice packs.'],
+    ['setup','Set up market stations using the “Market Table Layout” picture guide.','Middle station name is obscured by glare; verify it from the original photo.'],
+    ['sell','Run selling shift using customer scripts and color-matched prices.'],
+    ['breakdown','Return items to color-coded market totes and tally remaining stock.'],
+    ['inventory','Count all products on the inventory sheet.'],
+    ['health','Complete morning quick-water shift and “Good Fuzz vs Bad Fuzz” visual health check.'],
+    ['harvest','Harvest bulk trays, pack market clamshells, and apply price stickers.']
+  ]},
+  {day:'Sunday',title:'Farmers market day #2',tasks:[
+    ['water','Complete the morning quick-water shift.'],
+    ['setup','Set up display and tables.'],
+    ['sell','Run market operations.'],
+    ['unload','Unload the market vehicle at the farm.'],
+    ['sanitize','Sanitize returned totes and ice packs.']
+  ]}
+];
+const LABELS = ['Amaranth','Arugula','Basil','Beet','Broccoli','Cabbage','Cantaloupe','Chard','Cilantro','Onion','Peas kale superfood smoothie booster','Peas sunflower radish salad mix','Peas sunflower radish salad spicy mix','Radish','Superfood mix','Sunflower','Sweet pea','Wasabi','Wheatgrass','Kale'];
+const LABELS_PRESENT = new Set(LABELS.filter(x => x !== 'Sweet pea' && x !== 'Kale'));
+function RoutinePanel() {
+  const [day, setDay] = useState(['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()]);
+  const [checks, setChecks] = useState<Record<string, boolean>>(() => { try { return JSON.parse(localStorage.getItem('denwork-routine-checks-v1') || '{}'); } catch { return {}; } });
+  const [labels, setLabels] = useState<Record<string, {exists:boolean; full:boolean}>>(() => { try { return JSON.parse(localStorage.getItem('denwork-label-status-v1') || '{}'); } catch { return {}; } });
+  const monday = new Date(); monday.setHours(0,0,0,0); monday.setDate(monday.getDate() - ((monday.getDay()+6)%7));
+  const week = monday.getFullYear() + '-' + String(monday.getMonth()+1).padStart(2,'0') + '-' + String(monday.getDate()).padStart(2,'0');
+  const toggle = (id:string, checked:boolean) => { const next={...checks,[week+':'+id]:checked}; setChecks(next); try { localStorage.setItem('denwork-routine-checks-v1',JSON.stringify(next)); } catch {} };
+  const setLabel = (name:string,field:'exists'|'full',value:boolean) => { const prev=labels[name] || {exists:LABELS_PRESENT.has(name),full:name==='Peas sunflower radish salad mix'}; const next={...labels,[name]:{...prev,[field]:value}}; setLabels(next); try {localStorage.setItem('denwork-label-status-v1',JSON.stringify(next));} catch {} };
+  const all = ROUTINES.reduce((n,d)=>n+d.tasks.length,0);
+  const done = ROUTINES.reduce((n,d)=>n+d.tasks.filter(t=>checks[week+':'+d.day+':'+t[0]]).length,0);
+  return <><PageHeading eyebrow="WEEKLY WORK PLAN" title="Farm routines" detail="Repeatable checklists for each workday. Weekly checkmarks reset by week; earlier weeks remain saved on this device." />
+    <section className="wa-hero-card"><div className="wa-hero-top"><span>THIS WEEK</span><span>{done} OF {all} CHECKED</span></div><div className="wa-progress"><div style={{width:(done/all*100)+'%'}} /></div></section>
+    <div className="wa-day-selector">{ROUTINES.map(d=><button key={d.day} className={'wa-button '+(day===d.day?'':'wa-button-muted')} onClick={()=>setDay(d.day)}>{d.day.slice(0,3)}</button>)}</div>
+    {ROUTINES.filter(d=>d.day===day).map(d=><section className="wa-section" key={d.day}><div className="wa-section-heading"><div><span className="wa-eyebrow">{d.day.toUpperCase()}</span><h2>{d.title}</h2></div><span>{d.tasks.filter(t=>checks[week+':'+d.day+':'+t[0]]).length}/{d.tasks.length}</span></div>
+      <div className="wa-routine-list">{d.tasks.map(t=>{const id=week+':'+d.day+':'+t[0];return <label className={'wa-routine-item '+(checks[id]?'is-checked':'')} key={id}><input type="checkbox" checked={!!checks[id]} onChange={e=>toggle(id,e.target.checked)} /><span className="wa-routine-copy"><strong>{t[1]}</strong>{t[2]&&<small>⚠️ {t[2]}</small>}</span></label>})}</div></section>)}
+    <section className="wa-section"><div className="wa-section-heading"><div><span className="wa-eyebrow">PRINTING & INVENTORY</span><h2>Product label tracker</h2></div></div><p className="wa-footnote">Statuses are prefilled from your list. Update either checkbox independently.</p>
+      <div className="wa-label-list">{LABELS.map(name=>{const st=labels[name]||{exists:LABELS_PRESENT.has(name),full:name==='Peas sunflower radish salad mix'};return <div className="wa-label-row" key={name}><strong>{name}</strong><label><input type="checkbox" checked={st.exists} onChange={e=>setLabel(name,'exists',e.target.checked)}/> Label exists</label><label><input type="checkbox" checked={st.full} onChange={e=>setLabel(name,'full',e.target.checked)}/> Needs full sheet</label></div>})}</div>
+    </section></>;
 }
