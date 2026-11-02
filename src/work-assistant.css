@@ -153,3 +153,6 @@
   .wa-print-task{font:10pt Arial,sans-serif;border-color:#bbb;padding:6px 0}
   .wa-print-note{font:9pt Arial,sans-serif;border-top:1px solid #777;padding-top:10px}
 }
+
+.wa-warning-reference{display:block;text-align:left;margin-top:4px;padding:4px 0;border:0;background:transparent;color:#e7bd7a;font:500 11px/1.5 'DM Sans',sans-serif;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.wa-warning-reference:hover{color:#f3d19a}
