@@ -23,9 +23,10 @@ type Paycheck = {
 type RoutineItem = { id: string; label: string; warning?: string };
 type RoutineDay = { day: string; title: string; items: RoutineItem[] };
 type LabelStatus = { exists: boolean; full: boolean };
+type SavingsGoal = { id: string; name: string; target: number; savedAmount: number };
 type StoredState = {
   tasks: WorkTask[]; paychecks: Paycheck[]; savingsAdjustment: number;
-  goal: { name: string; target: number } | null;
+  goals: SavingsGoal[];
   routines: RoutineDay[]; routineChecks: Record<string, boolean>;
   labels: Record<string, LabelStatus>; references: Record<string, string>;
 };
@@ -113,7 +114,7 @@ function defaultLabels(): Record<string, LabelStatus> {
   return Object.fromEntries(LABELS.map(name => [name, {exists:LABELS_PRESENT.has(name), full:name==='Peas sunflower radish salad mix'}]));
 }
 function readState(): StoredState {
-  const empty: StoredState = {tasks:[],paychecks:[],savingsAdjustment:0,goal:null,routines:BASE_ROUTINES,routineChecks:{},labels:defaultLabels(),references:{}};
+  const empty: StoredState = {tasks:[],paychecks:[],savingsAdjustment:0,goals:[],routines:BASE_ROUTINES,routineChecks:{},labels:defaultLabels(),references:{}};
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     const oldChecks = JSON.parse(localStorage.getItem('denwork-routine-checks-v1') || '{}');
@@ -127,7 +128,14 @@ function readState(): StoredState {
       coveredTaskIds:Array.isArray(p.coveredTaskIds)?p.coveredTaskIds:[]
     })) : [];
     const labels = {...defaultLabels(), ...(parsed.labels || oldLabels)};
-    const merged = {...empty,...parsed,tasks,paychecks,labels,routineChecks:parsed.routineChecks || oldChecks};
+    const legacySavings = paychecks.reduce((sum:any,p:any)=>sum+Math.max(0,(Number(p.gross)||0)-(Number(p.allowance)||0)),0)+(Number(parsed.savingsAdjustment)||0);
+    const goals: SavingsGoal[] = Array.isArray(parsed.goals)
+      ? parsed.goals.map((goal:any)=>({id:goal.id||makeId(),name:String(goal.name||'Savings goal'),target:Math.max(0,Number(goal.target)||0),savedAmount:Math.max(0,Number(goal.savedAmount)||0)}))
+      : parsed.goal && Number(parsed.goal.target)>0
+        ? [{id:makeId(),name:String(parsed.goal.name||'Savings goal'),target:Number(parsed.goal.target),savedAmount:Math.max(0,legacySavings)}]
+        : [];
+    const {goal: legacyGoal, ...parsedWithoutLegacyGoal} = parsed;
+    const merged = {...empty,...parsedWithoutLegacyGoal,tasks,paychecks,goals,labels,routineChecks:parsed.routineChecks || oldChecks};
     if (!Array.isArray(merged.routines) || !merged.routines.length) merged.routines = BASE_ROUTINES;
     if (!merged.references || typeof merged.references !== 'object') merged.references = {};
     return merged;
@@ -223,6 +231,10 @@ export default function App() {
   const [runSheetOpen,setRunSheetOpen] = useState(false);
   const [newGoalName,setNewGoalName] = useState('');
   const [newGoalTarget,setNewGoalTarget] = useState('');
+  const [editingGoalId,setEditingGoalId] = useState<string|null>(null);
+  const [goalFormOpen,setGoalFormOpen] = useState(false);
+  const [goalContributions,setGoalContributions] = useState<Record<string,string>>({});
+  const [goalMessage,setGoalMessage] = useState('');
   const [newLabelName,setNewLabelName] = useState('');
   const [labelSearch,setLabelSearch] = useState('');
   const [labelFilter,setLabelFilter] = useState<'all'|'missing'|'full'>('all');
@@ -301,12 +313,54 @@ export default function App() {
     reader.onload=()=>{try{const parsed=JSON.parse(String(reader.result));const incoming=parsed.state||parsed;
       if(!incoming||!Array.isArray(incoming.tasks)||!Array.isArray(incoming.paychecks))throw new Error('This file does not look like a Denwork backup.');
       if(!window.confirm('Restore this backup and replace the current Denwork data on this device?'))return;
-      setState({...readState(),...incoming});setBackupMessage('Backup restored on this device.');
+      const restored:any={...readState(),...incoming};
+      if(!Array.isArray(restored.goals)){
+        const oldGoal=restored.goal;
+        const oldSavings=(restored.paychecks||[]).reduce((sum:number,p:any)=>sum+Math.max(0,(Number(p.gross)||0)-(Number(p.allowance)||0)),0)+(Number(restored.savingsAdjustment)||0);
+        restored.goals=oldGoal&&Number(oldGoal.target)>0?[{id:makeId(),name:String(oldGoal.name||'Savings goal'),target:Number(oldGoal.target),savedAmount:Math.max(0,oldSavings)}]:[];
+      }
+      delete restored.goal;
+      restored.goals=restored.goals.map((goal:any)=>({id:goal.id||makeId(),name:String(goal.name||'Savings goal'),target:Math.max(0,Number(goal.target)||0),savedAmount:Math.max(0,Number(goal.savedAmount)||0)}));
+      setState(restored);setBackupMessage('Backup restored on this device.');
     }catch(e){setBackupMessage(e instanceof Error?e.message:'Could not read this backup.');}finally{event.target.value='';}};
     reader.readAsText(file);
   };
 
-  const saveGoal=(event:React.FormEvent)=>{event.preventDefault();const target=Number(newGoalTarget);if(!newGoalName.trim()||!Number.isFinite(target)||target<=0)return;setState(s=>({...s,goal:{name:newGoalName.trim(),target}}));setNewGoalName('');setNewGoalTarget('');};
+  const saveGoal=(event:React.FormEvent)=>{
+    event.preventDefault();
+    const target=Number(newGoalTarget);
+    if(!newGoalName.trim()||!Number.isFinite(target)||target<=0)return;
+    if(editingGoalId){
+      setState(s=>({...s,goals:s.goals.map(goal=>goal.id===editingGoalId?{...goal,name:newGoalName.trim(),target}:goal)}));
+      setGoalMessage('Savings goal updated.');
+    }else{
+      const goal:SavingsGoal={id:makeId(),name:newGoalName.trim(),target,savedAmount:0};
+      setState(s=>({...s,goals:[...s.goals,goal]}));
+      setGoalMessage('Savings goal added. Allocate money to it from your unassigned savings.');
+    }
+    setNewGoalName('');setNewGoalTarget('');setEditingGoalId(null);setGoalFormOpen(false);
+  };
+  const startGoalEdit=(goal:SavingsGoal)=>{
+    setEditingGoalId(goal.id);setNewGoalName(goal.name);setNewGoalTarget(String(goal.target));setGoalFormOpen(true);
+  };
+  const deleteGoal=(id:string)=>{
+    if(!window.confirm('Delete this savings goal? Any money allocated to it will return to unassigned savings.'))return;
+    setState(s=>({...s,goals:s.goals.filter(goal=>goal.id!==id)}));
+    setGoalContributions(s=>{const next={...s};delete next[id];return next;});
+    setGoalMessage('Goal deleted. Its allocated amount is available to assign to another goal.');
+  };
+  const unassignedSavings=Math.max(0,savings-state.goals.reduce((sum,goal)=>sum+goal.savedAmount,0));
+  const allocateGoalSavings=(id:string)=>{
+    const goal=state.goals.find(item=>item.id===id);
+    if(!goal)return;
+    const requested=Number(goalContributions[id]);
+    const available=Math.min(unassignedSavings,Math.max(0,goal.target-goal.savedAmount));
+    if(!Number.isFinite(requested)||requested<=0){setGoalMessage('Enter an amount greater than $0.');return;}
+    if(requested>available){setGoalMessage('You can allocate up to '+money(available)+' to this goal right now.');return;}
+    setState(s=>({...s,goals:s.goals.map(item=>item.id===id?{...item,savedAmount:item.savedAmount+requested}:item)}));
+    setGoalContributions(s=>({...s,[id]:''}));
+    setGoalMessage(money(requested)+' allocated to '+goal.name+'.');
+  };
   const addLabel=(event:React.FormEvent)=>{event.preventDefault();const name=newLabelName.trim();if(!name)return;setState(s=>({...s,labels:{...s.labels,[name]:{exists:false,full:false}}}));setNewLabelName('');};
   const setLabel=(name:string,field:'exists'|'full',value:boolean)=>setState(s=>({...s,labels:{...s.labels,[name]:{...(s.labels[name]||{exists:false,full:false}),[field]:value}}}));
 
@@ -356,9 +410,31 @@ export default function App() {
         {tab==='pay'&&<>
           <PageHeading eyebrow="MONEY LOG" title="Pay & savings" detail="Record real paychecks, set a savings target, and review trends." action={<button className="wa-button" onClick={()=>setShowPayForm(true)}><Plus size={16}/> Add paycheck</button>}/>
           <section className="wa-pay-summary"><div><span>TOTAL PAY RECORDED</span><strong>{money(totalPay)}</strong></div><div><span>ALLOWANCES SET ASIDE</span><strong>{money(totalAllowances)}</strong></div><div><span>ESTIMATED SAVINGS</span><strong>{money(savings)}</strong></div></section>
-          <section className="wa-goal-card"><div className="wa-section-heading"><div><span className="wa-eyebrow">SAVINGS GOAL</span><h2>{state.goal?.name||'Give your savings a target'}</h2></div><Target size={22}/></div>
-            {state.goal?<><div className="wa-goal-numbers"><strong>{money(savings)}</strong><span>of {money(state.goal.target)}</span><strong>{Math.min(100,savings/state.goal.target*100).toFixed(0)}%</strong></div><div className="wa-progress"><div style={{width:Math.min(100,savings/state.goal.target*100)+'%'}}/></div><p className="wa-footnote">{money(Math.max(0,state.goal.target-savings))} remaining. Progress uses recorded paycheck savings after allowances.</p><button className="wa-text-button" onClick={()=>{setNewGoalName(state.goal?.name||'');setNewGoalTarget(String(state.goal?.target||''));}}>Edit goal</button></>:<p className="wa-footnote">Choose a goal such as equipment, an emergency fund, or vehicle maintenance.</p>}
-            <form className="wa-goal-form" onSubmit={saveGoal}><input value={newGoalName} onChange={e=>setNewGoalName(e.target.value)} placeholder="Goal name (e.g. farm equipment)" required/><input type="number" min="1" step="0.01" value={newGoalTarget} onChange={e=>setNewGoalTarget(e.target.value)} placeholder="Target amount ($)" required/><button className="wa-button" type="submit"><Save size={15}/>{state.goal?'Save goal':'Set goal'}</button></form>
+          <section className="wa-goals-section">
+            <div className="wa-section-heading"><div><span className="wa-eyebrow">SAVINGS GOALS</span><h2>Your goals</h2></div><button className="wa-button" onClick={()=>{setEditingGoalId(null);setNewGoalName('');setNewGoalTarget('');setGoalFormOpen(v=>!v);}}><Plus size={15}/> Add goal</button></div>
+            <div className="wa-goal-pool"><div><span>TOTAL SAVINGS AVAILABLE</span><strong>{money(savings)}</strong></div><div><span>ASSIGNED TO GOALS</span><strong>{money(state.goals.reduce((sum,goal)=>sum+goal.savedAmount,0))}</strong></div><div><span>UNASSIGNED</span><strong>{money(unassignedSavings)}</strong></div></div>
+            {state.goals.length? <div className="wa-goal-list">{state.goals.map(goal=>{
+              const progress=goal.target>0?Math.min(100,goal.savedAmount/goal.target*100):0;
+              const available=Math.min(unassignedSavings,Math.max(0,goal.target-goal.savedAmount));
+              return <article className="wa-goal-card" key={goal.id}>
+                <div className="wa-goal-title"><div><span className="wa-eyebrow">SAVINGS GOAL</span><h3>{goal.name}</h3></div><div className="wa-goal-actions"><button className="wa-icon-button" aria-label={'Edit '+goal.name} onClick={()=>startGoalEdit(goal)}><Pencil size={15}/></button><button className="wa-icon-button" aria-label={'Delete '+goal.name} onClick={()=>deleteGoal(goal.id)}><Trash2 size={15}/></button></div></div>
+                <div className="wa-goal-numbers"><strong>{money(goal.savedAmount)}</strong><span>of {money(goal.target)}</span><strong>{progress.toFixed(0)}%</strong></div>
+                <div className="wa-progress"><div style={{width:progress+'%'}}/></div>
+                <p className="wa-footnote">{money(Math.max(0,goal.target-goal.savedAmount))} remaining to reach this goal.</p>
+                <form className="wa-goal-allocation" onSubmit={e=>{e.preventDefault();allocateGoalSavings(goal.id);}}>
+                  <label>Allocate from unassigned savings <span>{money(available)} available for this goal</span></label>
+                  <div><input type="number" min="0.01" max={available.toFixed(2)} step="0.01" value={goalContributions[goal.id]||''} onChange={e=>setGoalContributions(s=>({...s,[goal.id]:e.target.value}))} placeholder="Amount ($)" disabled={available<=0}/><button className="wa-button" type="submit" disabled={available<=0||!goalContributions[goal.id]}>Allocate</button></div>
+                </form>
+              </article>;
+            })}</div>:<div className="wa-empty"><div><Target size={22}/></div><strong>No savings goals yet</strong><p>Add as many goals as you need, each with its own target and progress.</p></div>}
+            {goalMessage&&<p className="wa-form-hint" role="status">{goalMessage}</p>}
+            {goalFormOpen&&<form className="wa-goal-form" onSubmit={saveGoal}>
+              <h3>{editingGoalId?'Edit savings goal':'Create a savings goal'}</h3>
+              <input value={newGoalName} onChange={e=>setNewGoalName(e.target.value)} placeholder="Goal name (e.g. farm equipment)" required/>
+              <input type="number" min="1" step="0.01" value={newGoalTarget} onChange={e=>setNewGoalTarget(e.target.value)} placeholder="Target amount ($)" required/>
+              <div className="wa-form-actions"><button className="wa-button wa-button-muted" type="button" onClick={()=>{setGoalFormOpen(false);setEditingGoalId(null);setNewGoalName('');setNewGoalTarget('');}}>Cancel</button><button className="wa-button" type="submit"><Save size={15}/>{editingGoalId?'Save changes':'Create goal'}</button></div>
+            </form>}
+            <p className="wa-footnote">Each goal has its own allocated balance. Allocating moves money from the unassigned portion of your tracked savings; it does not increase your total savings or count the same money twice.</p>
           </section>
           <div className="wa-callout"><Wallet size={20}/><div><strong>Your rule: $25 per paycheck</strong><p>Recorded allowances: {money(totalAllowances)} · Average paycheck: {money(averagePaycheck)} · Average savings after allowance: {money(state.paychecks.length?savings/state.paychecks.length:0)}.</p></div></div>
           <section className="wa-section"><div className="wa-section-heading"><div><span className="wa-eyebrow">MONTHLY & YEARLY</span><h2>Pay summaries</h2></div></div><PaySummaries paychecks={state.paychecks}/></section>
