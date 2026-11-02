@@ -314,10 +314,12 @@ export default function App() {
       if(!incoming||!Array.isArray(incoming.tasks)||!Array.isArray(incoming.paychecks))throw new Error('This file does not look like a Denwork backup.');
       if(!window.confirm('Restore this backup and replace the current Denwork data on this device?'))return;
       const restored:any={...readState(),...incoming};
-      if(!Array.isArray(restored.goals)){
-        const oldGoal=restored.goal;
+      if(!Array.isArray(incoming.goals)){
+        const oldGoal=incoming.goal;
         const oldSavings=(restored.paychecks||[]).reduce((sum:number,p:any)=>sum+Math.max(0,(Number(p.gross)||0)-(Number(p.allowance)||0)),0)+(Number(restored.savingsAdjustment)||0);
         restored.goals=oldGoal&&Number(oldGoal.target)>0?[{id:makeId(),name:String(oldGoal.name||'Savings goal'),target:Number(oldGoal.target),savedAmount:Math.max(0,oldSavings)}]:[];
+      }else{
+        restored.goals=incoming.goals;
       }
       delete restored.goal;
       restored.goals=restored.goals.map((goal:any)=>({id:goal.id||makeId(),name:String(goal.name||'Savings goal'),target:Math.max(0,Number(goal.target)||0),savedAmount:Math.max(0,Number(goal.savedAmount)||0)}));
