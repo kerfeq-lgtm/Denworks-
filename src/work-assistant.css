@@ -180,3 +180,38 @@
 .wa-custom-divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--wa-muted);font-size:9px;font-weight:700;letter-spacing:1.3px}
 .wa-custom-divider:before,.wa-custom-divider:after{content:"";height:1px;flex:1;background:var(--wa-border)}
 @media(max-width:420px){.wa-preset-section{padding:12px}.wa-preset-footer{align-items:stretch}.wa-preset-footer .wa-button{width:100%}}
+
+
+/* Multiple savings goals with separate balances and allocation controls */
+.wa-goals-section{margin:20px 0}
+.wa-goal-pool{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0}
+.wa-goal-pool>div{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid var(--wa-border);border-radius:12px;background:var(--wa-panel);min-width:0}
+.wa-goal-pool span{font-size:8px;line-height:1.35;letter-spacing:1px;color:var(--wa-muted);font-weight:700}
+.wa-goal-pool strong{font:700 clamp(14px,3vw,18px) Manrope;overflow-wrap:anywhere}
+.wa-goal-list{display:flex;flex-direction:column;gap:11px}
+.wa-goal-card{margin:0;padding:16px;border:1px solid var(--wa-border);background:var(--wa-panel);border-radius:16px}
+.wa-goal-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.wa-goal-title h3{font:700 18px Manrope;letter-spacing:-.3px;margin:5px 0 0;overflow-wrap:anywhere}
+.wa-goal-actions{display:flex;gap:3px}
+.wa-goal-numbers{display:flex;align-items:baseline;gap:8px;margin:13px 0 8px}
+.wa-goal-numbers strong:first-child{font:800 23px Manrope}
+.wa-goal-numbers span{font-size:11px;color:var(--wa-muted);flex:1}
+.wa-goal-numbers strong:last-child{font:700 15px Manrope;color:var(--wa-green)}
+.wa-goal-allocation{padding-top:12px;border-top:1px solid #ffffff10;margin-top:12px}
+.wa-goal-allocation>label{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;font-size:11px;font-weight:600;color:#d6d3c8;margin-bottom:8px}
+.wa-goal-allocation>label span{font-size:10px;color:var(--wa-muted);font-weight:400}
+.wa-goal-allocation>div{display:flex;gap:8px}
+.wa-goal-allocation input{flex:1;min-width:0;min-height:43px;border:1px solid #424137;background:#11110f;color:var(--wa-text);border-radius:10px;padding:10px 12px;font:400 14px 'DM Sans',sans-serif}
+.wa-goal-allocation input:focus{outline:none;border-color:var(--wa-amber);box-shadow:0 0 0 3px #d9a86c20}
+.wa-goal-allocation .wa-button{min-height:43px}
+.wa-goal-allocation .wa-button:disabled{opacity:.4;cursor:not-allowed}
+.wa-goal-form{display:flex;flex-direction:column;gap:10px;padding:15px;margin-top:13px;border:1px solid var(--wa-border);border-radius:14px;background:#ffffff05}
+.wa-goal-form h3{font:700 15px Manrope;margin:0 0 3px}
+.wa-goal-form input{width:100%;min-height:44px}
+.wa-goal-form .wa-form-actions{justify-content:flex-end}
+@media(max-width:420px){
+  .wa-goal-pool{grid-template-columns:1fr 1fr}
+  .wa-goal-pool>div:last-child{grid-column:1/-1}
+  .wa-goal-allocation>div{align-items:stretch}
+  .wa-goal-allocation .wa-button{padding:10px}
+}
