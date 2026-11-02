@@ -1,0 +1,12 @@
+{
+  "name": "Denwork — AI Work Assistant",
+  "short_name": "Denwork",
+  "description": "A cozy mobile work assistant for tasks, pay tracking, savings, and approved AI automation.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#11110f",
+  "theme_color": "#11110f",
+  "icons": []
+}
