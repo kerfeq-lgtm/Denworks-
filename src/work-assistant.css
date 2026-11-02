@@ -156,3 +156,27 @@
 
 .wa-warning-reference{display:block;text-align:left;margin-top:4px;padding:4px 0;border:0;background:transparent;color:#e7bd7a;font:500 11px/1.5 'DM Sans',sans-serif;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .wa-warning-reference:hover{color:#f3d19a}
+
+
+/* Weekday routine presets in the New Task dialog */
+.wa-preset-section{padding:15px;border:1px solid var(--wa-border);background:#ffffff04;border-radius:15px;margin-bottom:16px}
+.wa-preset-heading{display:flex;align-items:center;justify-content:space-between;color:var(--wa-amber);gap:10px}
+.wa-preset-heading h3{font:700 17px Manrope;margin:5px 0 0;color:var(--wa-text)}
+.wa-preset-day{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:600;color:#d6d3c8;margin:13px 0}
+.wa-preset-day select{min-width:145px}
+.wa-preset-list{display:flex;flex-direction:column;gap:7px;max-height:270px;overflow:auto;padding-right:3px}
+.wa-preset-row{display:grid;grid-template-columns:21px minmax(0,1fr) auto;align-items:flex-start;gap:9px;padding:10px;border:1px solid #ffffff12;border-radius:10px;background:#11110f;cursor:pointer}
+.wa-preset-row input{width:19px;height:19px;margin:1px 0 0;accent-color:#d9a86c}
+.wa-preset-row>span{display:flex;flex-direction:column;gap:4px;min-width:0}
+.wa-preset-row strong{font-size:12px;line-height:1.4;font-weight:600}
+.wa-preset-row small{font-size:10px;line-height:1.45;color:#e7bd7a}
+.wa-preset-row .wa-preset-logged{color:var(--wa-green)}
+.wa-preset-rate{color:var(--wa-muted);white-space:nowrap;padding-top:2px}
+.wa-preset-row.is-logged{opacity:.58;cursor:default}
+.wa-preset-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:13px;padding-top:12px;border-top:1px solid var(--wa-border)}
+.wa-preset-footer>span{font-size:10px;color:var(--wa-muted)}
+.wa-preset-footer .wa-button{font-size:11px}
+.wa-preset-footer .wa-button:disabled{opacity:.4}
+.wa-custom-divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--wa-muted);font-size:9px;font-weight:700;letter-spacing:1.3px}
+.wa-custom-divider:before,.wa-custom-divider:after{content:"";height:1px;flex:1;background:var(--wa-border)}
+@media(max-width:420px){.wa-preset-section{padding:12px}.wa-preset-footer{align-items:stretch}.wa-preset-footer .wa-button{width:100%}}
