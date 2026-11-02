@@ -181,58 +181,58 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
 
 const ROUTINES = [
   {day:'Monday',title:'Inventory & station prep',tasks:[
-    ['seeds','Check seed shelf fill lines; put a red reorder card in the basket if low.'],
-    ['soil','Check bulk soil/coir bins.'],
-    ['paper','Check paper towels and packaging supplies.','Source wording is unclear; verify the exact instruction.'],
-    ['clamshells','Check clamshell packaging containers.'],
-    ['variety','Check that variety sticker rolls are full.'],
-    ['traps','Inspect sticky traps and replace dirty ones.'],
-    ['soak','Set up soaking jars and scoops for Tuesday’s planting batch.'],
-    ['weight','Move trays to the Weighted Phase and place visual weight blocks on top.']
+    ['seeds','Check seeds. Add a red reorder card if low.'],
+    ['soil','Check soil and coir bins.'],
+    ['paper','Check paper towels and packing supplies.','Double-check the original instruction.'],
+    ['clamshells','Check clamshells.'],
+    ['variety','Check variety sticker rolls.'],
+    ['traps','Check sticky traps; replace dirty ones.'],
+    ['soak','Set out soaking jars and scoops.'],
+    ['weight','Move trays to the weighted stage. Add weights.']
   ]},
   {day:'Tuesday',title:'Planting day #1',tasks:[
-    ['batch1','Execute Batch #1 planting with color-matched scoops and pre-measured soil trays.'],
+    ['batch1','Plant Batch #1.'],
     ['weight','Move trays to the Weighted Phase and place visual weight blocks on top.'],
-    ['water','Top-/bottom-water active growing racks.']
+    ['water','Water active racks (top and bottom).']
   ]},
   {day:'Wednesday',title:'Harvest #1 + planting #2',tasks:[
-    ['batchcheck','Confirm the morning short-grow batch number before planting.','Transcription conflict: photo appears to say Batch #1, while the heading says Planting Day #2.'],
-    ['harvest','Harvest subscriber/restaurant orders: cut greens, weigh with clamshell on scale, apply delivery labels.'],
-    ['batch2','Execute afternoon Batch #2 planting for next week’s Friday harvest.'],
+    ['batchcheck','Check the batch number before planting.','Batch number is unclear in the source photo—confirm before planting.'],
+    ['harvest','Harvest orders, weigh packs, and add delivery labels.'],
+    ['batch2','Plant Batch #2.'],
     ['weight','Move trays to the Weighted Phase and place visual weight blocks on top.'],
-    ['stage','Stage finished packs in designated refrigerated delivery totes.'],
+    ['stage','Put finished packs in the delivery fridge totes.'],
     ['water','Top-/bottom-water active growing racks.']
   ]},
   {day:'Thursday',title:'Delivery + planting #3',tasks:[
-    ['load','Load pre-staged delivery totes into transport bins using visual routing checklists.'],
-    ['drop','Complete subscriber and restaurant drop-offs.'],
-    ['batch3','Execute Batch #3 planting for next week’s Friday/Market harvest.'],
-    ['lights','Bottom-water and check lights on greening racks.'],
-    ['water','Water crop.']
+    ['load','Load delivery totes for the route.'],
+    ['drop','Deliver subscriber and restaurant orders.'],
+    ['batch3','Plant Batch #3.'],
+    ['lights','Bottom-water racks and check lights.'],
+    ['water','Water the crops.']
   ]},
   {day:'Friday',title:'Harvest #2 + market prep',tasks:[
-    ['harvest','Harvest bulk trays for weekend sales.'],
-    ['pack','Pack market clamshells and apply price stickers.'],
-    ['totes','Pack market totes: tents, tables, lanyards, displays, extra clamshells, blank labels, cash/token box.'],
-    ['inventory','Count all products on the inventory sheet.'],
-    ['cuttrays','Decide on cut trays for display/extra inventory.'],
+    ['harvest','Harvest bulk trays for market.'],
+    ['pack','Pack clamshells and add price stickers.'],
+    ['totes','Pack market gear: tents, tables, displays, clamshells, blank labels, and cash/token box.'],
+    ['inventory','Count products on the inventory sheet.'],
+    ['cuttrays','Choose which extra trays to cut.'],
     ['water','Top-/bottom-water active growing racks.']
   ]},
   {day:'Saturday',title:'Farmers market day #1',tasks:[
-    ['coolers','Pack coolers with ice packs.'],
-    ['setup','Set up market stations using the “Market Table Layout” picture guide.','Middle station name is obscured by glare; verify it from the original photo.'],
-    ['sell','Run selling shift using customer scripts and color-matched prices.'],
-    ['breakdown','Return items to color-coded market totes and tally remaining stock.'],
+    ['coolers','Pack coolers and ice packs.'],
+    ['setup','Set up tables using the market layout picture.','One station name is hard to read—check the original photo.'],
+    ['sell','Sell products; use the customer script and price guide.'],
+    ['breakdown','Pack up totes and count what is left.'],
     ['inventory','Count all products on the inventory sheet.'],
-    ['health','Complete morning quick-water shift and “Good Fuzz vs Bad Fuzz” visual health check.'],
-    ['harvest','Harvest bulk trays, pack market clamshells, and apply price stickers.']
+    ['health','Quick-water crops and check for good vs. bad fuzz.'],
+    ['harvest','Harvest trays, pack clamshells, and add prices.']
   ]},
   {day:'Sunday',title:'Farmers market day #2',tasks:[
-    ['water','Complete the morning quick-water shift.'],
-    ['setup','Set up display and tables.'],
-    ['sell','Run market operations.'],
-    ['unload','Unload the market vehicle at the farm.'],
-    ['sanitize','Sanitize returned totes and ice packs.']
+    ['water','Quick-water the crops.'],
+    ['setup','Set up the display and tables.'],
+    ['sell','Run the market.'],
+    ['unload','Unload the vehicle at the farm.'],
+    ['sanitize','Clean returned totes and ice packs.']
   ]}
 ];
 const LABELS = ['Amaranth','Arugula','Basil','Beet','Broccoli','Cabbage','Cantaloupe','Chard','Cilantro','Onion','Peas kale superfood smoothie booster','Peas sunflower radish salad mix','Peas sunflower radish salad spicy mix','Radish','Superfood mix','Sunflower','Sweet pea','Wasabi','Wheatgrass','Kale'];
