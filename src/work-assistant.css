@@ -35,3 +35,23 @@
 .wa-label-row label{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--wa-muted,#aaa);white-space:nowrap}
 .wa-label-row input{width:15px;height:15px}
 @media(max-width:520px){.wa-label-row{grid-template-columns:1fr 1fr}.wa-label-row>strong{grid-column:1/-1}.wa-label-row label{font-size:12px}}
+
+
+/* Larger, easier-to-tap controls for the routine checklist on phones */
+.wa-day-selector .wa-button{min-height:52px;min-width:52px;padding:13px 12px;font-size:14px;border-radius:14px}
+.wa-routine-item{min-height:64px;gap:15px;padding:17px 15px}
+.wa-routine-item input{width:25px;height:25px;min-width:25px;margin-top:1px;cursor:pointer}
+.wa-routine-copy strong{font-size:15px;line-height:1.5}
+.wa-routine-copy small{font-size:13px;line-height:1.5}
+.wa-label-row input{width:22px;height:22px;min-width:22px}
+.wa-label-row label{gap:8px;font-size:13px;min-height:42px}
+.wa-label-row{padding:14px;gap:12px}
+.wa-button{min-height:46px}
+.wa-nav-item{min-height:56px}
+@media(max-width:520px){
+  .wa-day-selector{gap:8px;padding-bottom:14px}
+  .wa-day-selector .wa-button{flex:1;min-height:56px;min-width:48px;font-size:14px}
+  .wa-routine-item{padding:17px 14px;min-height:68px}
+  .wa-label-row label{font-size:12px;white-space:normal;align-items:center}
+  .wa-label-row input{width:24px;height:24px;min-width:24px}
+}
